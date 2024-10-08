@@ -1,0 +1,106 @@
+#include <string>
+#include <iostream>
+#include <fstream>
+#include "ArgumentManager.h"
+using namespace std;
+struct node{
+    string value[2];
+    node* next = nullptr;
+    node(string val0, string val1){value[0] = val0; value[1] = val1;}
+};
+class linkedList{
+    public:
+        void Append(node* inputs){
+            if(head == nullptr){
+                head = inputs;
+                tail = inputs;
+                size++;
+                return;
+            }
+            tail->next = inputs;
+            tail = inputs;
+            size++;
+        }
+        bool isEmpty(){
+            return (head == nullptr);
+        }
+        int getSize(){
+            return size;
+        }
+    private:
+        node* head = nullptr;
+        node* tail = nullptr;
+        int size = 0;
+};
+template<typename T>
+struct person{
+    T name;
+    bool head;
+    person* next = nullptr;
+    person(T n, bool h = 0){id = n; head = h;}
+};
+template<typename T> 
+struct meetList{
+    person *self = nullptr;
+    person *lastMet = nullptr;
+    int size = 0;
+};
+int main(int argc, char *argv[]) {
+    ArgumentManager am(argc, argv);
+    /*string input = am.get("input");
+    string output = am.get("output");
+    ifstream fin(input);
+    ofstream fout(output);*/
+    string fileNum = "1";
+    ifstream fin("input" + fileNum + ".txt");
+    int peopleNum, meetPeople[2];
+    fin >> peopleNum;
+    string meetPeopleStr[2];
+    linkedList inputList;
+    bool names = 0;
+    fin >> meetPeopleStr[0];
+    fin >> meetPeopleStr[1];
+    if(isdigit(meetPeopleStr[0][0])){
+        meetList<int>* meetMatrix[peopleNum];
+    } 
+    person* first = nullptr;
+    for(int i = 0; i < peopleNum; i++){
+        meetMatrix[i] = new meetList;
+        meetMatrix[i]->self = new person(i, 1);
+        meetMatrix[i]->lastMet = meetMatrix[i]->self;
+        meetMatrix[i]->size++;
+    }
+    while((first == nullptr) && (fin >> meetPeopleStr[0] && fin >> meetPeopleStr[1])){
+        meetPeople[0] = stoi(meetPeopleStr[0]);
+        meetPeople[1] = stoi(meetPeopleStr[1]);
+        person* connection0 = new person(meetPeople[0], 0);
+        person* connection1 = new person(meetPeople[1], 0);
+        meetMatrix[meetPeople[0]]->lastMet->next = connection1;
+        meetMatrix[meetPeople[0]]->lastMet = connection1;
+        meetMatrix[meetPeople[0]]->size++;
+        if(meetMatrix[meetPeople[0]]->size == peopleNum){
+            first = meetMatrix[meetPeople[0]]->self;
+            break;
+        }
+        meetMatrix[meetPeople[1]]->lastMet->next = connection0;
+        meetMatrix[meetPeople[1]]->lastMet = connection0;   
+        meetMatrix[meetPeople[1]]->size++;
+        if(meetMatrix[meetPeople[1]]->size == peopleNum){
+            first = meetMatrix[meetPeople[1]]->self;
+            break;
+        }
+    }
+    if(first != nullptr){
+        cout << first->id;
+        for(person* curr = first->next; curr != nullptr; curr = curr->next){
+            cout << curr->id;
+        }
+    }
+    /*for(int i = 0; i < peopleNum; i++){
+        for(person* curr = meetMatrix[i]->self; curr != nullptr; curr = curr->next){
+            cout << curr->id << " ";
+        }
+        cout << endl;
+    }*/
+    return 0;
+}
