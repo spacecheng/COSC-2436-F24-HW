@@ -25,7 +25,7 @@ class Board{
       space* markSpace(int, int, int);
       void makeHoles(int, ifstream*);
       bool validMove(int, int);
-      bool knightTour(int, int, int&, int);
+      bool knightTour(int, int, int, int);
 };
 
 Board::Board(int rNum, int cNum){
@@ -71,12 +71,12 @@ struct coord{
   coord(int x, int y){col = x; row = y;}
 };
 coord knightAction[8] = {coord(2, -1), coord(1, -2), coord(-1, -2), coord(-2, -1), coord(-2, 1), coord(-1, 2), coord(1, 2), coord(2,1)};
-bool Board::knightTour(int row, int col, int& moveNum, int prevMove = -1){
+bool Board::knightTour(int row, int col, int moveNum, int prevMove = -1){
   if(!validMove(row, col)){
     return 0;
   }
   //string debug; cout << "Current move:" << moveNum << endl;//debugO
-  markSpace(row, col, moveNum++);//marks with moveNum and then increments
+  markSpace(row, col, moveNum);
   //draw(&cout);//debugO
   //cout << endl; cin >>debug;//debugO
   int redundMove = (4+prevMove)%8;
@@ -84,12 +84,11 @@ bool Board::knightTour(int row, int col, int& moveNum, int prevMove = -1){
     if(prevMove != -1 && i == redundMove){//skip redundant moves
       continue;
     }
-    knightTour(row + knightAction[i].row, col + knightAction[i].col, moveNum, i);
+    knightTour(row + knightAction[i].row, col + knightAction[i].col, moveNum+1, i);
   }//if for loop ends, either it is done or it failed
   if(openSpace > 0){
     //cout << "backtrack" << endl;//debugO
     markSpace(row, col, 0);//backtrack
-    moveNum--;
     return false;
   }
   return true;
